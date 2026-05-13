@@ -10,8 +10,8 @@ import '../models/player.dart';
 import '../models/ship_record.dart';
 import '../services/player_data_service.dart';
 import '../theme.dart';
-import '../version.dart';
 import '../widgets/ace_ship_card.dart';
+import '../widgets/app_footer.dart';
 import '../widgets/battle_style_list.dart';
 import '../widgets/challenge_list.dart';
 import '../widgets/constellation_background.dart';
@@ -125,11 +125,7 @@ class _OverviewScreenState extends State<OverviewScreen> with SingleTickerProvid
       ),
       const Positioned(
         bottom: 12, left: 0, right: 0,
-        child: Text(
-          'F1 WOWS v$appVersion  ·  Powered by NHblock',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: AppColors.textFaded, fontSize: 11, letterSpacing: 1),
-        ),
+        child: AppFooter(),
       ),
     ],
   );
