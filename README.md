@@ -82,3 +82,5 @@ MIT — see [LICENSE](LICENSE).
 - [wows-numbers.com](https://wows-numbers.com) — 全服 PR 期望值
 - 群内各位热心群友帮助测试<img width="1284" height="2280" alt="qq" src="https://github.com/user-attachments/assets/fed34062-b417-4a42-baad-69fecdab4714" />
 
+<!-- Latest: v1.0.4 -->
+
