@@ -44,8 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Secrets / environment (千万别提交)
-.env
+# .env 故意提交 (开发者已接受风险, 出问题去 WG 面板撤销 Application ID)
+# .env
 .env.local
 **/quick_queries.json
 

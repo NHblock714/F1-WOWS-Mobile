@@ -6,26 +6,26 @@
 
 > 桌面 PySide6 版本同步开发，算法 100% 一致。
 
-## ✨ 主要功能
+## 主要功能
 
-- 🎯 **8 维战力雷达图**：胜率 / 伤害 / 经验 / 击杀 / 生存 / 命中 / 抗伤 / 侦查
-- 📊 **强弱项条形图**：8 项分数横向对比
-- ⚔️ **战斗风格自动推断**：抗线型 / 输出型 / 侦察型 / 中段怪 / ... 9 种 + 兜底
-- 🏅 **21 个终极挑战**：含黑五战舰收集、AL 联动、单场击杀峰值等
-- ⚓ **战舰榜**：等级 / 舰种 / 国家筛选，单舰六维雷达
-- 🎮 **6 种模式数据**：随机 / 联合 / 排位 / 公会 / 战役（单/组）
-- ⭐ **本命战舰**：算法 = `ship_pr × √battles`
-- ⚡ **快速查询**：常用玩家持久化
-- 🐴 **🐴含量值**：航母 / 潜艇 / 航站航巡航驱 加权
-- 🎖️ **战力修正系数**：挑战 / 含🐴量 / 杂食 / 老兵 4 个奇怪 buff
+- **8 维战力雷达图**：胜率 / 伤害 / 经验 / 击杀 / 生存 / 命中 / 抗伤 / 侦查
+- **强弱项条形图**：8 项分数横向对比
+- **战斗风格自动推断**：抗线型 / 输出型 / 侦察型 / 中段怪 / ... 9 种 + 兜底
+- **21 个终极挑战**：含黑五战舰收集、AL 联动、单场击杀峰值等
+- **战舰榜**：等级 / 舰种 / 国家筛选，单舰六维雷达
+- **6 种模式数据**：随机 / 联合 / 排位 / 公会 / 战役（单/组）
+- **本命战舰**：算法 = `ship_pr × √battles`
+- **快速查询**：常用玩家持久化
+- **含马量值**：航母 / 潜艇 / 航站航巡航驱 加权
+- **战力修正系数**：挑战 / 含马量 / 杂食 / 老兵 4 个奇怪 buff
 
-## 📦 安装
+## 安装
 
 直接下载 [Release APK](../../releases) 装到 Android 设备（5.0+）即可。
 
 > 首次启动需要拉取百科 + PR 数据，约 5–10 秒；之后秒开。
 
-## 🛠 从源码构建
+## 从源码构建
 
 ### 1. 装 Flutter SDK + Android Studio
 
@@ -33,18 +33,7 @@
 
 需要 Flutter 3.0+、Android SDK API 33+、AVD（如 Pixel 7 + API 34）。
 
-### 2. 申请 Wargaming Application ID
-
-访问 https://developers.wargaming.net/applications/ → 创建一个 Mobile Application（免费）→ 拿到 `application_id`
-
-### 3. 配置 .env
-
-```bash
-cp .env.example .env
-# 编辑 .env, 把 your_wargaming_application_id_here 替换成你的 ID
-```
-
-### 4. 跑起来
+### 2. 运行
 
 ```bash
 flutter pub get
@@ -53,7 +42,10 @@ flutter run            # 模拟器或连接的实机
 flutter build apk --release
 ```
 
-## 🏗 架构概览
+> 仓库自带 `.env`（含一个开发用的 Wargaming Application ID），开箱即用。
+> 想换成自己的 ID，去 https://developers.wargaming.net/applications/ 申请，然后编辑 `.env` 即可。
+
+## 架构概览
 
 ```
 lib/
@@ -81,7 +73,7 @@ lib/
 └── screens/                 search_screen + overview_screen (含 3 Tab)
 ```
 
-## 🧮 关键算法
+## 关键算法
 
 ### Personal Rating
 ```
@@ -104,18 +96,18 @@ ship_bp = (30000 / (1 + exp(-(ship_pr - 1700) / 300))) × min(1, sqrt(battles/10
 
 详细见 `lib/analysis/personal_rating.dart`。
 
-## 🤝 贡献
+## 贡献
 
 - Issue / PR 都欢迎
 - 改阈值改在 `lib/analysis/benchmarks.dart`
 - 加新挑战在 `lib/analysis/challenges.dart`
 - 加新风格在 `lib/analysis/battle_style.dart`
 
-## 📜 License
+## License
 
 MIT — see [LICENSE](LICENSE).
 
-## 🙏 致谢
+## 致谢
 
 - [Wargaming Public API](https://developers.wargaming.net/) — 数据来源
 - [wows-numbers.com](https://wows-numbers.com) — 全服 PR 期望值
