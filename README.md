@@ -111,4 +111,4 @@ MIT — see [LICENSE](LICENSE).
 
 - [Wargaming Public API](https://developers.wargaming.net/) — 数据来源
 - [wows-numbers.com](https://wows-numbers.com) — 全服 PR 期望值
-- 由 **NHblock** 主导设计与算法
+- 群内各位热心群友帮助测试
