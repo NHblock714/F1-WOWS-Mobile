@@ -42,9 +42,6 @@ flutter run            # 模拟器或连接的实机
 flutter build apk --release
 ```
 
-> 仓库自带 `.env`（含一个开发用的 Wargaming Application ID），开箱即用。
-> 想换成自己的 ID，去 https://developers.wargaming.net/applications/ 申请，然后编辑 `.env` 即可。
-
 ## 架构概览
 
 ```
