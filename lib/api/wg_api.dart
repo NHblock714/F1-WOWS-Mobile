@@ -60,6 +60,51 @@ class WgApi {
     return list?.cast<Map<String, dynamic>>() ?? [];
   }
 
+  /// 搜索工会 (按 tag 或 name 模糊).
+  Future<List<Map<String, dynamic>>> searchClans(String query) async {
+    final body = await _getBody('/wows/clans/list/', {'search': query});
+    final list = body['data'] as List?;
+    return list?.cast<Map<String, dynamic>>() ?? [];
+  }
+
+  /// 工会详细信息 (含成员 account_id 列表).
+  Future<Map<String, dynamic>?> getClanInfo(int clanId) async {
+    final url = Uri.parse('${region.baseUrl}/wows/clans/info/').replace(queryParameters: {
+      'application_id': applicationId,
+      'clan_id': '$clanId',
+      'extra': 'members',
+    });
+    final resp = await _client.get(url).timeout(const Duration(seconds: 15));
+    final body = jsonDecode(resp.body) as Map<String, dynamic>;
+    if (body['status'] != 'ok') return null;
+    final data = body['data'] as Map<String, dynamic>?;
+    return data?['$clanId'] as Map<String, dynamic>?;
+  }
+
+  /// 批量拉多个玩家信息 (一次最多 100 个 account_id).
+  /// 返回 {account_id_str: player_info_map}.
+  Future<Map<String, dynamic>> getPlayersInfoBatch(List<int> accountIds) async {
+    final result = <String, dynamic>{};
+    for (int i = 0; i < accountIds.length; i += 100) {
+      final chunk = accountIds.sublist(i, math.min(i + 100, accountIds.length));
+      final url = Uri.parse('${region.baseUrl}/wows/account/info/').replace(queryParameters: {
+        'application_id': applicationId,
+        'account_id': chunk.map((id) => '$id').join(','),
+      });
+      try {
+        final resp = await _client.get(url).timeout(const Duration(seconds: 30));
+        final body = jsonDecode(resp.body) as Map<String, dynamic>;
+        if (body['status'] == 'ok') {
+          final data = body['data'] as Map<String, dynamic>?;
+          if (data != null) result.addAll(data);
+        }
+      } catch (_) {
+        // 单批失败跳过, 继续下一批
+      }
+    }
+    return result;
+  }
+
   /// 获取玩家成就 {achievement_id: count} (battle 类).
   Future<Map<String, int>> getAchievements(int accountId) async {
     final url = Uri.parse('${region.baseUrl}/wows/account/achievements/').replace(queryParameters: {

@@ -18,6 +18,7 @@ import '../widgets/constellation_background.dart';
 import '../widgets/pie_chart.dart';
 import '../widgets/radar_chart.dart';
 import '../widgets/strength_bars.dart';
+import 'battle_card_screen.dart';
 
 class OverviewScreen extends StatefulWidget {
   final Region region;
@@ -77,9 +78,23 @@ class _OverviewScreenState extends State<OverviewScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final canShareCard = !_loading && _error == null
+        && _data != null && !_data!.player.hidden && _data!.player.stats != null;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.nickname),
+        actions: [
+          if (canShareCard)
+            IconButton(
+              tooltip: '生成战绩名片',
+              icon: const Icon(Icons.share_rounded),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => BattleCardScreen(data: _data!, region: widget.region),
+                ));
+              },
+            ),
+        ],
         bottom: _loading || _error != null || (_data?.player.hidden ?? false)
             ? null
             : TabBar(

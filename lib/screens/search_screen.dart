@@ -5,6 +5,7 @@ import '../services/quick_queries.dart';
 import '../theme.dart';
 import '../widgets/app_footer.dart';
 import '../widgets/constellation_background.dart';
+import 'clan_screen.dart';
 import 'overview_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final _quickSvc = QuickQueriesService();
   Region _region = Region.asia;
   List<Map<String, dynamic>> _candidates = [];
+  List<Map<String, dynamic>> _clanCandidates = [];
   List<QuickQuery> _quickList = [];
   bool _loading = false;
   String? _error;
@@ -63,23 +65,34 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _search() async {
-    final nick = _nicknameController.text.trim();
-    if (!RegExp(r'^[A-Za-z0-9_]{3,25}$').hasMatch(nick)) {
-      setState(() => _error = '昵称须为 3-25 位字母/数字/下划线');
+    final query = _nicknameController.text.trim();
+    if (query.length < 2) {
+      setState(() => _error = '至少输入 2 个字符');
       return;
     }
     setState(() {
       _loading = true;
       _error = null;
       _candidates = [];
+      _clanCandidates = [];
     });
     try {
       final api = WgApi(_region);
-      final results = await api.searchPlayers(nick);
+      // 并行: 玩家 + 工会
+      final playerFuture = RegExp(r'^[A-Za-z0-9_]{3,25}$').hasMatch(query)
+          ? api.searchPlayers(query).catchError((_) => <Map<String, dynamic>>[])
+          : Future.value(<Map<String, dynamic>>[]);
+      final clanFuture = api.searchClans(query).catchError((_) => <Map<String, dynamic>>[]);
+      final results = await Future.wait([playerFuture, clanFuture]);
       api.close();
+      final players = results[0];
+      final clans = results[1];
       setState(() {
-        _candidates = results;
-        if (results.isEmpty) _error = '未找到匹配玩家';
+        _candidates = players;
+        _clanCandidates = clans;
+        if (players.isEmpty && clans.isEmpty) {
+          _error = '未找到匹配的玩家或工会';
+        }
       });
     } catch (e) {
       setState(() => _error = e.toString());
@@ -125,6 +138,17 @@ class _SearchScreenState extends State<SearchScreen> {
         nickname: nickname,
       ),
     )).then((_) => _refreshCacheStatus());
+  }
+
+  void _openClan(Map<String, dynamic> c) {
+    Navigator.push(context, MaterialPageRoute(
+      builder: (_) => ClanScreen(
+        region: _region,
+        clanId: c['clan_id'] as int,
+        tag: c['tag']?.toString() ?? '',
+        name: c['name']?.toString() ?? '',
+      ),
+    ));
   }
 
   @override
@@ -173,10 +197,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 }),
               ),
               const SizedBox(height: 16),
-              const _SectionLabel('② 玩家昵称'),
+              const _SectionLabel('② 玩家昵称 / 工会 Tag'),
               TextField(
                 controller: _nicknameController,
-                decoration: const InputDecoration(hintText: '3-25 位字母/数字/_'),
+                decoration: const InputDecoration(hintText: '输入玩家名或工会 tag/名'),
                 onSubmitted: (_) => _search(),
               ),
               const SizedBox(height: 12),
@@ -199,9 +223,24 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 12),
                 Text(_error!, style: const TextStyle(color: AppColors.red)),
               ],
-              if (_candidates.isNotEmpty) ...[
+              if (_clanCandidates.isNotEmpty) ...[
                 const SizedBox(height: 24),
-                const _SectionLabel('③ 选择玩家'),
+                _SectionLabel('🏴 工会 - ${_clanCandidates.length}'),
+                ..._clanCandidates.map((c) => Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.flag, color: AppColors.blue),
+                    title: Text('[${c['tag']}] ${c['name']}',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text('成员 ${c['members_count'] ?? '?'} · id=${c['clan_id']}',
+                        style: const TextStyle(color: AppColors.textDim)),
+                    trailing: const Icon(Icons.chevron_right, color: AppColors.blue),
+                    onTap: () => _openClan(c),
+                  ),
+                )),
+              ],
+              if (_candidates.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                _SectionLabel('👤 玩家 - ${_candidates.length}'),
                 ..._candidates.map((c) => Card(
                   child: ListTile(
                     title: Text(c['nickname'] ?? ''),
@@ -254,6 +293,6 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: 4, top: 4),
-    child: Text(text, style: const TextStyle(color: AppColors.textDim, fontSize: 13)),
+    child: Text(text, style: const TextStyle(color: AppColors.blue, fontSize: 13, fontWeight: FontWeight.bold)),
   );
 }

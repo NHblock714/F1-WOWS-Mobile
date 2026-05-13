@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import '../models/ship_record.dart';
 import 'benchmarks.dart';
 import 'scoring.dart';
@@ -56,14 +57,15 @@ import 'scoring.dart';
     scores['主炮命中'] = (r.mainBatteryHitRate, 0);
   }
 
-  // 场次 - 0-100 ramp at threshold then log
+  // 场次 - 0-100 线性, threshold 以上 log 缓增 (与 Python _battle_count_score 对齐)
   double battleScore;
   if (r.battles <= 0) {
     battleScore = 0;
   } else if (r.battles <= threshold) {
     battleScore = r.battles / threshold * 100;
   } else {
-    battleScore = 100 + 4.3 * ((1.0 + (r.battles - threshold) / 100.0).abs());
+    final over = r.battles - threshold;
+    battleScore = 100 + 4.3 * math.log(1.0 + over / 100.0);
   }
   scores['场次'] = (r.battles.toDouble(), battleScore);
 

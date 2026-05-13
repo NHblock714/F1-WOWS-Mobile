@@ -30,15 +30,26 @@ class _RadarPainter extends CustomPainter {
   _RadarPainter({required this.scores, required this.overall});
 
   /// 4 档主色 (与 PC qt_charts._polygon_color 一致).
+  /// 5 档评级 (与 _gradeForScore 同步): 金 / 紫 / 蓝 / 绿 / 红
   Color _polygonColor() {
-    if (overall >= 95) return AppColors.gold;
-    if (overall >= 70) return AppColors.green;
-    if (overall >= 45) return AppColors.blue;
+    if (overall >= 100) return AppColors.gold;
+    if (overall >= 70)  return AppColors.purple;
+    if (overall >= 40)  return AppColors.blue;
+    if (overall >= 10)  return AppColors.green;
     return AppColors.red;
   }
 
+  /// 5 档评级: S 金 (100+) / A 紫 (70-100) / B 蓝 (40-70) / C 绿 (10-40) / D 红 (<10).
+  ({String letter, Color color}) _gradeForScore(double score) {
+    if (score >= 100) return (letter: 'S', color: AppColors.gold);
+    if (score >= 70)  return (letter: 'A', color: AppColors.purple);
+    if (score >= 40)  return (letter: 'B', color: AppColors.blue);
+    if (score >= 10)  return (letter: 'C', color: AppColors.green);
+    return (letter: 'D', color: AppColors.red);
+  }
+
   String _fmtValue(String label, double raw) {
-    final percentMetrics = {'胜率', '生存率', '主炮命中', '🐴含量'};
+    final percentMetrics = {'胜率', '生存率', '主炮命中', '🐴含量', '隐藏🐴'};
     if (percentMetrics.contains(label)) {
       return '${(raw * 100).toStringAsFixed(1)}%';
     }
@@ -61,7 +72,7 @@ class _RadarPainter extends CustomPainter {
     final side = math.min(size.width, size.height);
     final center = Offset(size.width / 2, size.height / 2);
     final rMax = side / 2 - 60;
-    final rForScore = (double s) => rMax * s / 130.0;
+    final rForScore = (double s) => rMax * (s < 0 ? 0 : s) / 130.0;
     final angles = List.generate(n, (i) => 2 * math.pi * i / n - math.pi / 2);
 
     // 网格圈
@@ -95,7 +106,7 @@ class _RadarPainter extends CustomPainter {
           Offset(center.dx + rOuter * math.cos(a), center.dy + rOuter * math.sin(a)), axisPaint);
     }
 
-    // 玩家多边形
+    // 玩家多边形 (单色, 由总平均分决定颜色档位)
     final color = _polygonColor();
     final pts = <Offset>[];
     for (int i = 0; i < n; i++) {
@@ -107,7 +118,6 @@ class _RadarPainter extends CustomPainter {
       polyPath.lineTo(pts[i].dx, pts[i].dy);
     }
     polyPath.close();
-    // 多边形填充 (与 PC 一致: 主色 alpha 75 平涂)
     canvas.drawPath(polyPath, Paint()
       ..color = color.withAlpha(75)
       ..style = PaintingStyle.fill);
@@ -146,12 +156,22 @@ class _RadarPainter extends CustomPainter {
       final raw = scores[labels[i]]!.$1;
       final valueText = _fmtValue(labels[i], raw);
 
-      // 名称
-      tp.text = TextSpan(text: labels[i],
-          style: TextStyle(
-            color: isBest ? AppColors.gold : AppColors.text,
-            fontSize: 11,
-          ));
+      final grade = _gradeForScore(values[i]);
+
+      // 名称 + 评级徽章 (同一行: "胜率 [S]")
+      tp.text = TextSpan(children: [
+        TextSpan(text: '${labels[i]} ',
+            style: TextStyle(
+              color: isBest ? AppColors.gold : AppColors.text,
+              fontSize: 11,
+            )),
+        TextSpan(text: grade.letter,
+            style: TextStyle(
+              color: grade.color,
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+            )),
+      ]);
       tp.layout();
       tp.paint(canvas, Offset(cx - tp.width / 2, cy - 18));
       // 值
