@@ -3,7 +3,7 @@ import '../api/wg_api.dart';
 import '../services/cache.dart';
 import '../services/quick_queries.dart';
 import '../theme.dart';
-import '../version.dart';
+import '../widgets/app_footer.dart';
 import '../widgets/constellation_background.dart';
 import 'overview_screen.dart';
 
@@ -146,11 +146,7 @@ class _SearchScreenState extends State<SearchScreen> {
       bottomNavigationBar: const SafeArea(
         child: Padding(
           padding: EdgeInsets.only(bottom: 6, top: 4),
-          child: Text(
-            'F1 WOWS v$appVersion  ·  Powered by NHblock',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textFaded, fontSize: 11, letterSpacing: 1),
-          ),
+          child: AppFooter(),
         ),
       ),
       body: ConstellationBackground(

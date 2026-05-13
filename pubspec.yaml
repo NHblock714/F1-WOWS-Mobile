@@ -1,7 +1,7 @@
 name: f1_wows
 description: F1 WOWS - World of Warships stats analyzer (mobile port)
 publish_to: 'none'
-version: 1.0.2+3
+version: 1.0.3+4
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -15,6 +15,7 @@ dependencies:
   intl: ^0.19.0
   path_provider: ^2.1.0
   cached_network_image: ^3.3.0
+  url_launcher: ^6.2.0
 
 dev_dependencies:
   flutter_test:
