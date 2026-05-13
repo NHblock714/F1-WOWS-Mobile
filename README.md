@@ -42,34 +42,6 @@ flutter run            # 模拟器或连接的实机
 flutter build apk --release
 ```
 
-## 架构概览
-
-```
-lib/
-├── main.dart               入口
-├── theme.dart              海军蓝 + 金色主题
-├── version.dart            版本号
-├── models/                 Player / ShipRecord 数据模型
-├── api/
-│   ├── wg_api.dart         WG 公共 API 客户端
-│   └── wows_numbers.dart   wows-numbers.com PR 期望值
-├── analysis/
-│   ├── personal_rating.dart   PR / 战力 sigmoid + 修正系数
-│   ├── radar_scores.dart      8 轴评分
-│   ├── battle_style.dart      战斗风格推断
-│   ├── challenges.dart        21 个挑战
-│   ├── benchmarks.dart        阈值表 + 舰种/等级系数
-│   ├── mechanical_accuracy.dart 主炮命中机械精度修正
-│   ├── scoring.dart           score_value 5 点插值
-│   └── single_ship.dart       单舰 6 维评分
-├── services/
-│   ├── cache.dart             文件缓存 (TTL 控制)
-│   ├── player_data_service.dart 数据聚合
-│   └── quick_queries.dart     快速查询持久化
-├── widgets/                 雷达 / 强弱项 / 战斗风格列表 / 挑战列表 / 本命舰卡 / 饼图 / 星座背景
-└── screens/                 search_screen + overview_screen (含 3 Tab)
-```
-
 ## 关键算法
 
 ### Personal Rating
@@ -108,4 +80,5 @@ MIT — see [LICENSE](LICENSE).
 
 - [Wargaming Public API](https://developers.wargaming.net/) — 数据来源
 - [wows-numbers.com](https://wows-numbers.com) — 全服 PR 期望值
-- 群内各位热心群友帮助测试
+- 群内各位热心群友帮助测试<img width="1284" height="2280" alt="qq" src="https://github.com/user-attachments/assets/fed34062-b417-4a42-baad-69fecdab4714" />
+
