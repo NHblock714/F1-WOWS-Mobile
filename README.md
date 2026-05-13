@@ -4,7 +4,6 @@
 
 跨平台 Flutter app，对接 Wargaming 公共 API + wows-numbers.com，把玩家战绩做成带感的可视化：战力 PR、雷达图、战斗风格、终极挑战、本命战舰等。
 
-> 桌面 PySide6 版本同步开发，算法 100% 一致。
 
 ## 主要功能
 
